@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <div id="app">
+      <hr />
+      <h2>流程定义</h2>
+      <h4><a href="#" @click="toHome()">回到首页</a></h4>
+      <hr />
+      <table border="1">
+        <tr>
+          <td>id</td>
+          <td>deploymentId</td>
+          <td>name</td>
+          <td>category</td>
+          <td>optional</td>
+        </tr>
+        <tr v-for="item in models">
+          <td>{{ item.id }}</td>
+          <td>{{ item.deploymentId }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.category }}</td>
+          <td>
+            <a href="#" @click="xmlfn(item.id)">XML</a>
+            <a href="#" @click="imagefn(item.id)">IMAGE</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/2.2.2/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script src="ajax_rwq.js"></script>
+
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          models: []
+        },
+        methods: {
+          toHome: function(id) {
+            location.href = "index.html";
+          },
+          xmlfn: function(id) {
+            AJAXRWQ("GET", "/activiti/model/exist2/xml/" + id, {}, function(
+              data
+            ) {
+              console.log(data);
+              alert('XML');
+            });
+          },
+          imagefn: function(id) {
+            AJAXRWQ("GET", "/activiti/model/exist2/image/" + id, {}, function(
+              data
+            ) {
+              console.log(data);
+              alert('IMAGE');
+            });
+          }
+        },
+        created: function() {
+          AJAXRWQ("GET", "/activiti/processdef/all", {}, function(data) {
+            vm.models = data;
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

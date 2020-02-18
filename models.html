@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <div id="app">
+      <hr />
+      <h2>模型列表</h2>
+      <h4><a href="#" @click="toHome()">回到首页</a></h4>
+      <a href="#" @click="draw()">绘制流程</a>
+      <hr />
+      <table border="1">
+        <tr>
+          <td>id</td>
+          <td>deploymentId</td>
+          <td>name</td>
+          <td>category</td>
+          <td>optional</td>
+        </tr>
+        <tr v-for="item in models">
+          <td>{{ item.id }}</td>
+          <td>{{ item.deploymentId }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.category }}</td>
+          <td>
+            <a href="#" @click="edit(item.id)">编辑</a>&nbsp;&nbsp;
+            <a href="#" @click="push(item.id)">发布</a>&nbsp;&nbsp;
+            <a href="#" @click="del(item.id)">删除</a>
+            <a href="#" @click="xmlfn(item.id)">XML</a>
+            <a href="#" @click="imagefn(item.id)">IMAGE</a>
+            <a href="#" @click="copy(item.id)">复制</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/2.2.2/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script src="ajax_rwq.js"></script>
+
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          models: []
+        },
+        methods: {
+          toHome: function(id) {
+            location.href = "index.html";
+          },
+          draw: function(id) {
+            AJAXRWQ("GET", "/activiti/model/new2", {}, function(data) {
+              vm.reload();
+              location.href = "modeler.html?modelId=" + data;
+              //window.open("modeler.html?modelId=" + data);
+            });
+          },
+          edit: function(id) {
+            location.href = "modeler.html?modelId=" + id;
+          },
+          push: function(id) {
+            AJAXRWQ("POST", "/activiti/model/deploy/" + id, {}, function(data) {
+              if (data.success) {
+                vm.reload();
+              } else {
+                alert(data.message);
+              }
+            });
+          },
+          del: function(id) {
+            AJAXRWQ("POST", "/activiti/model/delete/" + id, {}, function(data) {
+              vm.reload();
+            });
+          },
+          reload: function() {
+            AJAXRWQ("GET", "/activiti/model/all", {}, function(data) {
+              vm.models = data;
+            });
+          },
+          xmlfn: function(id) {
+            AJAXRWQ("GET", "/activiti/model/exist2/xml/" + id, {}, function(
+              data
+            ) {
+              console.log(data);
+            });
+          },
+          imagefn: function(id) {
+            AJAXRWQ("GET", "/activiti/model/exist2/image/" + id, {}, function(
+              data
+            ) {
+              console.log(data);
+            });
+          },
+          copy: function(id) {
+            AJAXRWQ("POST", "/activiti/model/copy/" + id, {}, function(data) {
+              vm.reload();
+            });
+          }
+        },
+        created: function() {
+          AJAXRWQ("GET", "/activiti/model/all", {}, function(data) {
+            vm.models = data;
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <div id="app">
+      <hr />
+      <h2>流程实例</h2>
+      <h4><a href="#" @click="toHome()">回到首页</a></h4>
+      <hr />
+      <table border="1">
+        <tr>
+          <td>id</td>
+          <td>deploymentId</td>
+          <td>name</td>
+          <td>suspensionState</td>
+          <td>processInstanceId</td>
+          <td>businessKey</td>
+          <td>activityId</td>
+          <td>processDefinitionKey</td>
+          <td>processDefinitionName</td>
+          <td>optional</td>
+        </tr>
+        <tr v-for="item in models">
+          <td>{{ item.id }}</td>
+          <td>{{ item.deploymentId }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.suspensionState }}</td>
+          <td>{{ item.processInstanceId }}</td>
+          <td>{{ item.businessKey }}</td>
+          <td>{{ item.activityId }}</td>
+          <td>{{ item.processDefinitionKey }}</td>
+          <td>{{ item.processDefinitionName }}</td>
+          <td>
+            <a href="#" @click="insdetail(item.id)">流程明细</a>
+            <a href="#" @click="suspend(item.id)">挂起</a>
+            <a href="#" @click="active(item.id)">激活</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/2.2.2/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script src="ajax_rwq.js"></script>
+
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          models: []
+        },
+        methods: {
+          reload: function() {
+            AJAXRWQ("GET", "/activiti/processinstance/all", {}, function(data) {
+              vm.models = data;
+            });
+          },
+          toHome: function(id) {
+            location.href = "index.html";
+          },
+          insdetail: function(id) {
+            location.href = "processInsDetail.html?id=" + id;
+          },
+          suspend: function(id) {
+            AJAXRWQ(
+              "POST",
+              "/activiti/processinstance/toggleSuspensionState/" + id,
+              {},
+              function(data) {
+                vm.reload();
+                alert("挂起");
+              }
+            );
+          },
+          active: function(id) {
+            AJAXRWQ(
+              "POST",
+              "/activiti/processinstance/toggleSuspensionState/" + id,
+              {},
+              function(data) {
+                vm.reload();
+                alert("激活");
+              }
+            );
+          }
+        },
+        created: function() {
+          AJAXRWQ("GET", "/activiti/processinstance/all", {}, function(data) {
+            console.log(data);
+            vm.models = data;
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

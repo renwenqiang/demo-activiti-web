@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <div id="app">
+      <hr />
+      <h2>审批详情</h2>
+      <h4><a href="#" @click="toHome()">返回</a></h4>
+      <hr />
+      <table border="1">
+        <tr>
+          <td>id</td>
+          <td>activityId</td>
+          <td>activityName</td>
+          <td>activityType</td>
+          <td>assigneeName</td>
+        </tr>
+        <tr v-for="item in models">
+          <td>{{ item.id }}</td>
+          <td>{{ item.activityId }}</td>
+          <td>{{ item.activityName }}</td>
+          <td>{{ item.activityType }}</td>
+          <td>{{ item.assigneeName }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/2.2.2/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script src="ajax_rwq.js"></script>
+
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          models: []
+        },
+        methods: {
+          toHome: function() {
+            window.history.back();
+          }
+        },
+        created: function() {
+          var str = location.search.substring(4);
+          console.log('eee:', str);
+          AJAXRWQ("GET", "/activiti/processinstance/detailList/" + str, {}, function(data) {
+            console.log(data);
+            vm.models = data;
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
